@@ -4,6 +4,7 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.generics import ListAPIView, UpdateAPIView, CreateAPIView, RetrieveAPIView, DestroyAPIView
 from rest_framework.permissions import AllowAny
 
+from lms.permissions import IsModer
 from users.models import Payments, User
 from users.serializer import PaymentsSerializer, UserSerializer
 
@@ -15,7 +16,9 @@ class UserCreateAPIView(CreateAPIView):
 
     def perform_create(self, serializer):
         user = serializer.save(is_active=True)
+        print(user.password, user.email)
         user.set_password(user.password)
+        print(user.password)
         user.save()
 
 
