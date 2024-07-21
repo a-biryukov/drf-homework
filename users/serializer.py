@@ -7,7 +7,7 @@ class UserSerializer(ModelSerializer):
 
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['id', 'email', 'avatar', 'phone', 'country', 'password']
 
 
 class PaymentsSerializer(ModelSerializer):

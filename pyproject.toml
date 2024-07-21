@@ -11,9 +11,9 @@ django = "^5.0.7"
 psycopg2-binary = "^2.9.9"
 djangorestframework = "^3.15.2"
 python-dotenv = "^1.0.1"
-django-countries = "^7.6.1"
 pillow = "^10.4.0"
 django-filter = "^24.2"
+djangorestframework-simplejwt = "^5.3.1"
 
 
 [build-system]

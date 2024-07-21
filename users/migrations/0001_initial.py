@@ -2,7 +2,6 @@
 
 import django.contrib.auth.models
 import django.utils.timezone
-import django_countries.fields
 from django.db import migrations, models
 
 
@@ -30,7 +29,7 @@ class Migration(migrations.Migration):
                 ('email', models.EmailField(max_length=254, unique=True, verbose_name='Электронная почта')),
                 ('avatar', models.ImageField(blank=True, help_text='Загрузите фото', null=True, upload_to='users/avatars', verbose_name='Аватар')),
                 ('phone', models.CharField(blank=True, help_text='Введите номер телефона', max_length=35, null=True, verbose_name='Телефон')),
-                ('country', django_countries.fields.CountryField(blank=True, help_text='Выберите страну', max_length=2, null=True, verbose_name='Страна')),
+                ('country', models.CharField(blank=True, help_text='Введите страну', max_length=100, null=True, verbose_name='Страна')),
                 ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.group', verbose_name='groups')),
                 ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.permission', verbose_name='user permissions')),
             ],

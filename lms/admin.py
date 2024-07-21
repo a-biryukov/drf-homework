@@ -1,8 +1,13 @@
 from django.contrib import admin
 
-from users.models import User
+from lms.models import Course, Lesson
 
 
-@admin.register(User)
+@admin.register(Course)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'email', 'avatar', 'country',)
+    list_display = ('id', 'name', 'description',)
+
+
+@admin.register(Lesson)
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'description', 'course',)
