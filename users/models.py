@@ -12,12 +12,12 @@ class User(AbstractUser):
     phone = models.CharField(max_length=35, verbose_name='Телефон', **NULLABLE, help_text='Введите номер телефона')
     country = models.CharField(max_length=100, verbose_name='Страна', help_text='Введите страну', **NULLABLE)
 
-    USERNAME_FIELD = "email"
+    USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
     class Meta:
-        verbose_name = "Пользователь"
-        verbose_name_plural = "Пользователи"
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 
     def __str__(self):
         return self.email
@@ -37,8 +37,8 @@ class Payments(models.Model):
     payment_method = models.CharField(max_length=50, verbose_name='Способ оплаты', choices=PAYMENT_METHOD_CHOICES)
 
     class Meta:
-        verbose_name = "Платежи"
-        verbose_name_plural = "Платежи"
+        verbose_name = 'Платежи'
+        verbose_name_plural = 'Платежи'
 
     def __str__(self):
         return (f'Дата платежа: {self.date_of_payment}'
@@ -48,12 +48,12 @@ class Payments(models.Model):
 
 
 class Subscription(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь", **NULLABLE)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name="Курс", **NULLABLE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь', **NULLABLE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Курс', **NULLABLE)
 
     def __str__(self):
-        return {self.user}, {self.course}
+        return f'{self.user, self.course}'
 
     class Meta:
-        verbose_name = "Подписка"
-        verbose_name_plural = "Подписки"
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
