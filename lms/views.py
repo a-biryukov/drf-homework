@@ -1,5 +1,6 @@
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from lms.models import Course, Lesson
@@ -14,19 +15,22 @@ class CourseViewSet(ModelViewSet):
     pagination_class = CustomPaginator
 
     def list(self, request, *args, **kwargs):
+
         if IsModer().has_permission(self.request, self):
             queryset = Course.objects.all()
         else:
             queryset = Course.objects.filter(owner=request.user)
 
         page = self.paginate_queryset(queryset.order_by('id'))
-        serializer = CourseSerializer(page, many=True)
-        return self.get_paginated_response(serializer.data)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def perform_create(self, serializer):
-        course = serializer.save()
-        course.owner = self.request.user
-        course.save()
+        serializer.save(owner=self.request.user)
 
     def get_permissions(self):
         if self.action == 'create':

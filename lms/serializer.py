@@ -3,6 +3,7 @@ from rest_framework.serializers import ModelSerializer, CharField
 
 from lms.models import Course, Lesson
 from lms.validators import validate_urls
+from users.models import Subscription
 
 
 class LessonSerializer(ModelSerializer):
@@ -15,10 +16,11 @@ class LessonSerializer(ModelSerializer):
 
 
 class CourseSerializer(ModelSerializer):
-    lesson_count = SerializerMethodField()
-    lessons = LessonSerializer(source='lesson_set', many=True, read_only=True)
     name = CharField(validators=[validate_urls])
     description = CharField(validators=[validate_urls])
+    lesson_count = SerializerMethodField()
+    subscription = SerializerMethodField()
+    lessons = LessonSerializer(source='lesson_set', many=True, read_only=True)
 
     class Meta:
         model = Course
@@ -26,3 +28,7 @@ class CourseSerializer(ModelSerializer):
 
     def get_lesson_count(self, course):
         return Lesson.objects.filter(course_id=course.id).count()
+
+    def get_subscription(self, course):
+        user = self.context.get('request').user
+        return Subscription.objects.filter(course_id=course.id, user=user).exists()
