@@ -1,4 +1,3 @@
-
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import ListAPIView, UpdateAPIView, CreateAPIView, RetrieveAPIView, DestroyAPIView, \
@@ -74,4 +73,3 @@ class SubscriptionAPIView(APIView):
             message = 'Подписка удалена'
 
         return Response({"message": message})
-
