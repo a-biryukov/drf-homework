@@ -1,12 +1,16 @@
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
-from rest_framework.generics import ListAPIView, UpdateAPIView, CreateAPIView, RetrieveAPIView, DestroyAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.generics import ListAPIView, UpdateAPIView, CreateAPIView, RetrieveAPIView, DestroyAPIView, \
+    get_object_or_404
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from lms.permissions import IsModer, IsOwner
-from users.models import Payments, User
-from users.serializer import PaymentsSerializer, UserSerializer
+from lms.models import Course
+from lms.permissions import IsOwner
+from users.models import Payments, User, Subscription
+from users.serializer import PaymentsSerializer, UserSerializer, SubscriptionSerializer
 
 
 class UserCreateAPIView(CreateAPIView):
@@ -52,3 +56,22 @@ class PaymentsListAPIView(ListAPIView):
 
     def get_queryset(self):
         return Payments.objects.filter(user=self.request.user)
+
+
+class SubscriptionAPIView(APIView):
+    queryset = Subscription.objects.all()
+    serializer_class = SubscriptionSerializer
+
+    def post(self, *args, **kwargs):
+        user = self.request.user
+        course_id = self.request.data.get('course')
+        course_item = get_object_or_404(Course, pk=course_id)
+        subs_item, created = Subscription.objects.get_or_create(user=user, course=course_item)
+        if created:
+            message = 'Подписка добавлена'
+        else:
+            subs_item.delete()
+            message = 'Подписка удалена'
+
+        return Response({"message": message})
+
