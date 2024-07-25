@@ -17,11 +17,11 @@ class CourseViewSet(ModelViewSet):
     def list(self, request, *args, **kwargs):
 
         if IsModer().has_permission(self.request, self):
-            queryset = Course.objects.all()
+            queryset = self.get_queryset().order_by('id')
         else:
-            queryset = Course.objects.filter(owner=request.user)
+            queryset = self.get_queryset().filter(owner=request.user).order_by('id')
 
-        page = self.paginate_queryset(queryset.order_by('id'))
+        page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
