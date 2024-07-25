@@ -36,14 +36,15 @@ class LessonTestCase(APITestCase):
         # Авторизованный пользователь
         self.client.force_authenticate(user=self.user)
         response_1 = self.client.get(url)
-        data = response_1.json()
+        result_1 = response_1.json()
         self.assertEqual(response_1.status_code, status.HTTP_200_OK)
-        self.assertEqual(data.get('name'), self.lesson.name)
+        self.assertEqual(result_1.get('name'), self.lesson.name)
         # Модератор
         self.client.force_authenticate(user=self.moder)
-        data = response_1.json()
+        response_2 = self.client.get(url)
+        result_2 = response_2.json()
         self.assertEqual(response_1.status_code, status.HTTP_200_OK)
-        self.assertEqual(data.get('name'), self.lesson.name)
+        self.assertEqual(result_2.get('name'), self.lesson.name)
 
     def test_lesson_create(self):
         """Тестирование создания урока"""
@@ -77,46 +78,46 @@ class LessonTestCase(APITestCase):
         # Авторизованный пользователь
         self.client.force_authenticate(user=self.user)
         response_2 = self.client.patch(url, data_1)
-        result = response_2.json()
+        result_1 = response_2.json()
         self.assertEqual(response_2.status_code, status.HTTP_200_OK)
-        self.assertEqual(result.get('name'), 'Валидаторы')
+        self.assertEqual(result_1.get('name'), 'Валидаторы')
         # Ппытка обновления со ссылкой на сторонний ресурс
         data_2 = {'name': 'Пагинация', 'description': 'https://yandex.ru/video/preview/16370055609980825063'}
         response_3 = self.client.patch(url, data_2)
         self.assertEqual(response_3.status_code, status.HTTP_400_BAD_REQUEST)
         # Модератор
         self.client.force_authenticate(user=self.moder)
-        response_2 = self.client.patch(url, data_1)
-        result = response_2.json()
-        self.assertEqual(response_2.status_code, status.HTTP_200_OK)
-        self.assertEqual(result.get('name'), 'Валидаторы')
+        response_4 = self.client.patch(url, data_1)
+        result_2 = response_2.json()
+        self.assertEqual(response_4.status_code, status.HTTP_200_OK)
+        self.assertEqual(result_2.get('name'), 'Валидаторы')
 
     def test_lesson_destroy(self):
         """Тестирование удаления урока"""
         url = reverse('lms:lesson_delete', args=(self.lesson.pk,))
         # Неавторизованный пользователь
-        response_1 = self.client.delete(url)
-        self.assertEqual(response_1.status_code, status.HTTP_401_UNAUTHORIZED)
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         # Модератор
         self.client.force_authenticate(user=self.moder)
-        response_2 = self.client.delete(url)
-        self.assertEqual(response_2.status_code, status.HTTP_403_FORBIDDEN)
+        response_1 = self.client.delete(url)
+        self.assertEqual(response_1.status_code, status.HTTP_403_FORBIDDEN)
         # Авторизованный пользователь
         self.client.force_authenticate(user=self.user)
-        response_3 = self.client.delete(url)
-        self.assertEqual(response_3.status_code, status.HTTP_204_NO_CONTENT)
+        response_2 = self.client.delete(url)
+        self.assertEqual(response_2.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Lesson.objects.all().count(), 1)
 
     def test_lesson_list(self):
         """Тестирование просмотра списка уроков"""
         url = reverse('lms:lesson_list')
         # Неавторизованный пользователь
-        response_1 = self.client.get(url)
-        self.assertEqual(response_1.status_code, status.HTTP_401_UNAUTHORIZED)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         # Авторизованный пользователь
         self.client.force_authenticate(user=self.user)
-        response_2 = self.client.get(url)
-        result_1 = response_2.json()
+        response_1 = self.client.get(url)
+        result_1 = response_1.json()
         data_1 = {
             'count': 1,
             'next': None,
@@ -132,12 +133,12 @@ class LessonTestCase(APITestCase):
                 },
             ]
         }
-        self.assertEqual(response_2.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_1.status_code, status.HTTP_200_OK)
         self.assertEqual(result_1, data_1)
         # Модератор
         self.client.force_authenticate(user=self.moder)
-        response_3 = self.client.get(url)
-        result_2 = response_3.json()
+        response_2 = self.client.get(url)
+        result_2 = response_2.json()
         data_2 = {
             'count': 2,
             'next': None,
@@ -161,5 +162,5 @@ class LessonTestCase(APITestCase):
                 }
             ]
         }
-        self.assertEqual(response_3.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_2.status_code, status.HTTP_200_OK)
         self.assertEqual(result_2, data_2)
