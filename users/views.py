@@ -10,6 +10,7 @@ from lms.models import Course
 from lms.permissions import IsOwner
 from users.models import Payments, User, Subscription
 from users.serializer import PaymentsSerializer, UserSerializer, SubscriptionSerializer
+from users.services import create_stripe_price, create_stripe_product, create_stripe_session, get_date_of_payment
 
 
 class UserCreateAPIView(CreateAPIView):
@@ -50,11 +51,30 @@ class UserDestroyAPIView(DestroyAPIView):
 class PaymentsListAPIView(ListAPIView):
     serializer_class = PaymentsSerializer
     filter_backends = [DjangoFilterBackend, OrderingFilter]
-    filterset_fields = ('paid_course', 'paid_lesson', 'payment_method')
-    ordering_fields = ('date_of_payment', )
+    filterset_fields = ('course', 'lesson', 'method')
+    ordering_fields = ('paid_at', )
 
     def get_queryset(self):
         return Payments.objects.filter(user=self.request.user)
+
+
+class PaymentsCreateAPIView(CreateAPIView):
+    serializer_class = PaymentsSerializer
+    queryset = Payments.objects.all()
+
+    def perform_create(self, serializer):
+        payment = serializer.save(user=self.request.user)
+        if payment.course:
+            product = create_stripe_product(payment.course.name)
+        else:
+            product = create_stripe_product(payment.lesson.name)
+        price = create_stripe_price(payment.amount, product)
+        session_id, payment_link = create_stripe_session(price)
+        payment.session_id = session_id
+        payment.link = payment_link
+        payment.method = 'перевод'
+        payment.paid_at = get_date_of_payment()
+        payment.save()
 
 
 class SubscriptionAPIView(APIView):

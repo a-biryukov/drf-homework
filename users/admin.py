@@ -10,7 +10,7 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(Payments)
 class PaymentsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'paid_course', 'paid_lesson', 'date_of_payment', 'payment_amount', 'payment_method')
+    list_display = ('id', 'user', 'course', 'lesson', 'paid_at', 'amount', 'method')
 
 
 @admin.register(Subscription)

@@ -29,22 +29,55 @@ class Payments(models.Model):
         ('cash', 'наличные')
     ]
 
-    user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE)
-    paid_course = models.ForeignKey(Course, verbose_name='Оплаченный курс', on_delete=models.SET_NULL, **NULLABLE)
-    paid_lesson = models.ForeignKey(Lesson, verbose_name='Оплаченный урок', on_delete=models.SET_NULL, **NULLABLE)
-    date_of_payment = models.DateField(verbose_name='Дата оплаты')
-    payment_amount = models.IntegerField(verbose_name='Сумма оплаты')
-    payment_method = models.CharField(max_length=50, verbose_name='Способ оплаты', choices=PAYMENT_METHOD_CHOICES)
+    user = models.ForeignKey(
+        User,
+        verbose_name='Пользователь',
+        on_delete=models.SET_NULL,
+        **NULLABLE,
+        help_text='Укажите пользователя'
+    )
+    course = models.ForeignKey(
+        Course,
+        verbose_name='Оплаченный курс',
+        on_delete=models.SET_NULL, **NULLABLE,
+        help_text='Укажите оплаченный курс'
+    )
+    lesson = models.ForeignKey(
+        Lesson, verbose_name='Оплаченный урок',
+        on_delete=models.SET_NULL, **NULLABLE,
+        help_text='Укажите оплаченный урок'
+    )
+    paid_at = models.DateField(verbose_name='Дата оплаты',  **NULLABLE, help_text='Укажите дату оплаты')
+    amount = models.PositiveIntegerField(verbose_name='Сумма оплаты', help_text='Укажите сумму оплаты')
+    method = models.CharField(
+        max_length=50,
+        verbose_name='Способ оплаты',
+        choices=PAYMENT_METHOD_CHOICES,
+        **NULLABLE,
+        help_text='Выберите способ оплаты'
+    )
+    link = models.URLField(
+        max_length=400,
+        verbose_name='Ccылка на оплату',
+        **NULLABLE,
+        help_text='Укажите ссылку на оплату'
+    )
+    session_id = models.CharField(
+        max_length=255,
+        verbose_name='ID сессии',
+        **NULLABLE,
+        help_text='Укажите ID сессии'
+    )
 
     class Meta:
-        verbose_name = 'Платежи'
+        verbose_name = 'Платеж'
         verbose_name_plural = 'Платежи'
 
     def __str__(self):
-        return (f'Дата платежа: {self.date_of_payment}'
-                f'Сумма: {self.payment_amount}, способ оплаты: {self.payment_method}'
-                f'Курс: {self.paid_course}' if self.paid_course else f'Урок: {self.paid_lesson}'
-                f'Пользователь: {self.user.email}')
+        return (f'Дата платежа: {self.paid_at}'
+                f'Сумма: {self.amount}, способ оплаты: {self.method}'
+                f'Курс: {self.course}' if self.course else f'Урок: {self.lesson}'
+                f'Пользователь: {self.user}')
 
 
 class Subscription(models.Model):
