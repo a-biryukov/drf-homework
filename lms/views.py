@@ -10,7 +10,7 @@ from lms.models import Course, Lesson
 from lms.paginators import CustomPaginator
 from lms.permissions import IsModer, IsOwner
 from lms.serializer import CourseSerializer, LessonSerializer
-from lms.tasks import sending_mails_to_subscribers
+from users.tasks import sending_mails_to_subscribers
 from users.models import Subscription
 
 
