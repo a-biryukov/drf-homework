@@ -19,5 +19,3 @@ def sending_mails_to_subscribers(course):
         f'Курс {course} обновлен',
         EMAIL_HOST_USER,
         subscribers_emails)
-
-
