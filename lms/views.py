@@ -1,3 +1,6 @@
+from datetime import timedelta
+
+from django.utils import timezone
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -7,6 +10,8 @@ from lms.models import Course, Lesson
 from lms.paginators import CustomPaginator
 from lms.permissions import IsModer, IsOwner
 from lms.serializer import CourseSerializer, LessonSerializer
+from users.tasks import sending_mails_to_subscribers
+from users.models import Subscription
 
 
 class CourseViewSet(ModelViewSet):
@@ -41,6 +46,18 @@ class CourseViewSet(ModelViewSet):
             self.permission_classes = [IsOwner]
         return super().get_permissions()
 
+    def perform_update(self, serializer):
+        course = serializer.save()
+        subscriptions = Subscription.objects.filter(course=course.id).exists()
+        now = timezone.now()
+        next_send_time = course.updated_at + timedelta(hours=4)
+
+        if subscriptions and now > next_send_time:
+            sending_mails_to_subscribers(course)
+
+        course.updated_at = now
+        course.save()
+
 
 class LessonCreateAPIView(CreateAPIView):
     queryset = Lesson.objects.all()
@@ -74,6 +91,18 @@ class LessonUpdateAPIView(UpdateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = [IsModer | IsOwner]
+
+    def perform_update(self, serializer):
+        course = serializer.save().course
+        subscriptions = Subscription.objects.filter(course=course.id).exists()
+        now = timezone.now()
+        next_send_time = course.updated_at + timedelta(hours=4)
+
+        if subscriptions and now > next_send_time:
+            sending_mails_to_subscribers(course)
+
+        course.updated_at = now
+        course.save()
 
 
 class LessonDestroyAPIView(DestroyAPIView):
