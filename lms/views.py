@@ -48,12 +48,13 @@ class CourseViewSet(ModelViewSet):
 
     def perform_update(self, serializer):
         course = serializer.save()
-        subscriptions = Subscription.objects.filter(course=course.id).exists()
         now = timezone.now()
-        next_send_time = course.updated_at + timedelta(hours=4)
+        if course:
+            subscriptions = Subscription.objects.filter(course=course.id).exists()
+            next_send_time = course.updated_at + timedelta(hours=4)
 
-        if subscriptions and now > next_send_time:
-            sending_mails_to_subscribers(course)
+            if subscriptions and now > next_send_time:
+                sending_mails_to_subscribers(course)
 
         course.updated_at = now
         course.save()
@@ -65,9 +66,7 @@ class LessonCreateAPIView(CreateAPIView):
     permission_classes = [IsAuthenticated & ~IsModer]
 
     def perform_create(self, serializer):
-        lesson = serializer.save()
-        lesson.owner = self.request.user
-        lesson.save()
+        serializer.save(owner=self.request.user)
 
 
 class LessonListAPIView(ListAPIView):
@@ -94,12 +93,13 @@ class LessonUpdateAPIView(UpdateAPIView):
 
     def perform_update(self, serializer):
         course = serializer.save().course
-        subscriptions = Subscription.objects.filter(course=course.id).exists()
         now = timezone.now()
-        next_send_time = course.updated_at + timedelta(hours=4)
+        if course:
+            subscriptions = Subscription.objects.filter(course=course.id).exists()
+            next_send_time = course.updated_at + timedelta(hours=4)
 
-        if subscriptions and now > next_send_time:
-            sending_mails_to_subscribers(course)
+            if subscriptions and now > next_send_time:
+                sending_mails_to_subscribers(course)
 
         course.updated_at = now
         course.save()

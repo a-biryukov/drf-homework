@@ -29,8 +29,5 @@ def check_last_login():
     """Блокирует пользователей, которые не заходили больше 30 дней"""
     month_ago = timezone.now().today() - timedelta(days=30)
     if User.objects.filter(last_login__lte=month_ago, is_active=True).exists():
-        users_didnt_login = User.objects.filter(last_login__lte=month_ago, is_active=True)
-
-        for user in users_didnt_login:
-            user.is_active = False
-            user.save()
+        inactive_users = User.objects.filter(last_login__lt=month_ago, is_active=True)
+        inactive_users.update(is_active=False)
