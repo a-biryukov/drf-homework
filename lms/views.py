@@ -65,9 +65,7 @@ class LessonCreateAPIView(CreateAPIView):
     permission_classes = [IsAuthenticated & ~IsModer]
 
     def perform_create(self, serializer):
-        lesson = serializer.save()
-        lesson.owner = self.request.user
-        lesson.save()
+        serializer.save(owner=self.request.user)
 
 
 class LessonListAPIView(ListAPIView):
