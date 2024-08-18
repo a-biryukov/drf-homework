@@ -1,6 +1,12 @@
   Проект разрабатывается, как платформа для обучения
   ---
-**Как использовать:**
+**Запуск через Doker:**
++ Клонировать репозиторий
++ Заполнить файл .env-sample и переименовать его в .env
++ Собрать образ и запустить контейнеры в фоновом режиме:
+  + docker-compose up -d —build
+ ---
+**Запуск вручную:**
 + Клонировать репозиторий
 + Заполнить файл .env-sample и переименовать его в .env
 + Установить зависимости
@@ -12,5 +18,8 @@
   + python manage.py loaddata fixtures/lms_data.json
   + python manage.py loaddata fixtures/auth_data.json
   + python manage.py loaddata fixtures/users_data.json
++ Установить дополнительное ПО
+  + PostgreSQL
+  + Redis
 + Запустить сервис
   + python manage.py runserver
