@@ -39,6 +39,11 @@ class UserUpdateAPIView(UpdateAPIView):
     serializer_class = UserSerializer
     permission_classes = [IsOwner]
 
+    def perform_update(self, serializer):
+        user = serializer.save()
+        user.set_password(user.password)
+        user.save()
+
 
 class UserDestroyAPIView(DestroyAPIView):
     queryset = User.objects.all()
