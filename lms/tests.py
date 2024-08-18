@@ -51,7 +51,7 @@ class LessonTestCase(APITestCase):
         url = reverse('lms:lesson_create')
         # Неавторизованный пользователь
         data_1 = {'name': 'Пагинация', 'description': 'https://www.youtube.com/watch?v=bITQ13XCU9Q'}
-        response = self.client.get(url, data_1)
+        response = self.client.post(url, data_1)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         # Авторизованный пользователь
         self.client.force_authenticate(user=self.user)
